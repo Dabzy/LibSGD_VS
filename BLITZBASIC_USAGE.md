@@ -10,24 +10,13 @@ This guide explains how to use the LibSGD dynamic library with BlitzBasic using 
 
 ## Installation
 
-### Option 1: Using the DECLS file directly in your code
+### Standard Installation (Recommended)
 
-1. Copy `sgd_dynamic.dll` to your BlitzBasic project folder
-2. Include the `sgd.decls` file in your BlitzBasic source code:
+1. Locate your BlitzBasic `userlibs` directory (typically `C:\Program Files\BlitzBasic\userlibs\`)
+2. Copy `sgd_dynamic.dll` to the `userlibs` directory
+3. Copy `sgd.decls` to the `userlibs` directory
 
-```blitzbasic
-Include "sgd.decls"
-
-; Your code here
-sgd_Init()
-; ... rest of your application
-sgd_Terminate()
-```
-
-### Option 2: System-wide installation
-
-1. Copy `sgd_dynamic.dll` to your BlitzBasic `userlibs` directory
-2. Copy `sgd.decls` to the same directory or your project folder
+**That's it!** BlitzBasic will automatically load the DLL and declarations when you start the compiler. No `Include` statements needed.
 
 ## Type Mapping Reference
 
@@ -38,17 +27,33 @@ The DECLS file uses the following BlitzBasic type conventions:
 | `void` | (none) | No return value |
 | `int` | `%` | Integer |
 | `float` | `#` | Float (32-bit) |
-| `double` / `SGD_Real` | `#` | Float (64-bit on x64) |
+| `double` / `SGD_Real` | `!` | Double (64-bit) |
 | `const char*` / `SGD_String` | `$` | String |
 | `SGD_Bool` | `%` | Boolean (integer) |
 | `SGD_Handle` | `%` | Handle (integer) |
 | Enums | `%` | Integer |
 
+**Important:** On 64-bit builds, `SGD_Real` is a double and uses the `!` type tag. This is used for all entity positions, rotations, scales, and transform functions.
+
+## Using Constants
+
+The `sgd_constants.bb` file contains all LibSGD constants and enums. You have two options:
+
+**Option 1: Put in userlibs (Recommended)**
+- Copy `sgd_constants.bb` to your BlitzBasic `userlibs` folder
+- Include it in your programs: `Include "sgd_constants.bb"`
+
+**Option 2: Define constants manually**
+- Just define the constants you need in your code
+- See `sgd_constants.bb` for available values
+
 ## Quick Start Example
 
 ```blitzbasic
-; Include the LibSGD declarations
-Include "sgd.decls"
+; NOTE: Make sure sgd_dynamic.dll and sgd.decls are in your userlibs folder!
+
+; Define constants (or put sgd_constants.bb in userlibs)
+Const SGD_EVENT_MASK_CLOSE_CLICKED = 1
 
 ; Initialize LibSGD
 sgd_Init()
@@ -60,7 +65,7 @@ sgd_CreateWindow(1280, 720, "My LibSGD App", 0)
 camera = sgd_CreatePerspectiveCamera()
 
 ; Main loop
-While Not (sgd_PollEvents() And 1) ; Check for close event
+While Not (sgd_PollEvents() And SGD_EVENT_MASK_CLOSE_CLICKED)
 
     ; Render the scene
     sgd_RenderScene()

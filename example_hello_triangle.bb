@@ -2,10 +2,22 @@
 ; LibSGD Hello Triangle Example
 ; A simple BlitzBasic example demonstrating LibSGD usage
 ; ============================================================================
+; NOTE: sgd_dynamic.dll and sgd.decls must be in your BlitzBasic userlibs folder
+; Constants are defined below (or use Include "sgd_constants.bb" from userlibs)
+; ============================================================================
 
-; Include the function declarations and constants
-Include "sgd.decls"
-Include "sgd_constants.bb"
+; Window Flags
+Const SGD_WINDOW_FLAGS_CENTERED = 4
+Const SGD_WINDOW_FLAGS_RESIZABLE = 2
+
+; Event Masks
+Const SGD_EVENT_MASK_CLOSE_CLICKED = 1
+
+; Mesh Flags
+Const SGD_MESH_FLAGS_NONE = 0
+
+; Key Codes
+Const SGD_KEY_ESCAPE = 256
 
 ; ============================================================================
 ; Initialize LibSGD
