@@ -1,0 +1,453 @@
+***** V0.16.0 *****
+
+Added CameraType/LightType/TextureType enums to sgd.h
+
+Added TextureType enums.
+
+Added Python3.13 to build.
+
+Added very simple experimental serializer. Static meshes only, no material support. See serialize.bb
+
+Added terrain system. See docs for new terrain commands, and terrain.bb for demo. TerrainCollider coming soon.
+
+Updated PyPi README.md links.
+
+
+***** V0.15.2 *****
+
+Updated PyPi README.md example
+
+
+***** V0.15.1 *****
+
+Fixed PyPi package.
+
+
+***** V0.15.0 *****
+
+Added LoadArrayImage for loading multiframe images, removed frameCount param from loadImage. This is really just a fudge until proper 2d atlas support is added, which will be post 1.0
+
+Renamed GetSurfaceMaterial to GetMaterial.
+
+Renamed GetTFormedBlah to GetTransformedBlah.
+
+Renamed TFormBlah to TransformBlah and TFormMeshTexCoords to TransformTexCoords.
+
+Changed node js and python identifier style to lower camel case.
+
+Changed doc system to much nicer sphinx/breathe.
+
+Simplified material parameter names: "albedo", "emissive", "metalness", "roughness", "occlusion", "normal".
+
+Removed SetMaterialVector* functions so there is now only SetMaterialTexture, SetMaterialColor and SetMaterialFloat.
+
+Changed SetMaterialVector4f to SetMaterialColor. Color assumed to be non-linear, non-premultiplied ala Sprite, Model, 2D drawing colors.
+
+Removed miniaudio from external.
+
+Updated imgui, glfw, curl, soloud, stb, tinygltf repos forks.
+
+Added 3D audio commands: Set3DAudioConfig, Create3DAudioListener, Play3DSound, Update3DAudio.
+
+
+***** V0.14.4 *****
+
+Fixed overlay not recreated after ClearScene.
+
+Added ReleaseHandle/ReleaseAllHandles to Blitz3d.
+
+Fixed sprites broken due to sprite color change.
+
+Fixed debug mode issues with handles.
+
+Implemented parentPath for urls.
+
+
+***** V0.14.1-V0.14.3 *****
+
+Upload python package.
+
+
+***** V0.14.0 *****
+
+Fixed gltfloader current dir when loading GLBs.
+
+Updated dawn repos fork.
+
+Update sgd_ClearScene, added sgd_ResetScene.
+
+Cleaned up object<->handle interface, added sgd_ReleaseHandle and sgd_ReleaseAllhandles.
+
+Changed 2D fill, outline and  text colors and 3D model and sprite colors to assume sRGB colors with unpremultiplied alpha.
+
+Added skirmish project. This will become a stand alone project one day, but for now it's more convenient being able to
+link with SGD directly.
+
+Added zig target - thanks Seyha! Use SGD_ZIG_TARGET_ENABLED=ON cmake option to enable, requires python3.
+
+Fixed FindEntityChild bug(s).
+
+Added GetMeshBoundsMinX,MinY,MinZ,MaxX,MaxY,MaxZ.
+
+Added address sanitizer to Windows version. Use SGD_ASAN_ENABLED=ON cmake option to enable.
+
+
+***** V0.13.2 *****
+
+Fixed multiframe image loading.
+
+Fixed disabled render effects crashing.
+
+Added separate pass for overly after render effects.
+
+Added ''#define SGD_NULL 0' to sgd.h
+
+
+***** V0.13.1 *****
+
+Fixed handling of multiple collision types. Add GetCollisionCollider and GetColliderType. Added collision response consts
+to sgd.bb
+
+
+***** V0.13 *****
+
+Removed SetImage2DHandle. SetImageRect is now the way to set handles for sprites and 2d image drawing. Rect defaults to
+-.5, -.5, .5, .5 so images are handled by center by default. Rect is scaled by image texture size when using Draw2DImage, so you can also
+scale default image size by scaling rect.
+
+Added support for signed int8 formats and more float16 formats.
+
+Added support for exr image format for HDR textures, ie: float textures with r,g,b components potentially >1.
+
+Added support for 'equirect' 2d texture environment maps and skyboxes.
+
+Added CreateTexture, SetTexel, GetTexel.
+
+Fixed borked Blitz3D commands.
+
+Simplified bloom filter, added radius param.
+
+Fixed gltfloader setting entity names so FindEntityChild() should now work.
+
+Added support for emissive strength gltf extension allowing for emissive colors component values > 1.
+
+Fixed OOM error caused by gltf loader not growing vertices vector exponentially per primitive. This blows up on 32 bit archs with models
+with lots of vertices and lots of surfaces.
+
+
+***** V0.12 *****
+
+***** WARNING ****** Changed order of CreateSurface parameters. Use: CreateSurface(mesh, material, triangleCount) !!!!!
+
+Changed SetMeshShadowCastingEnabled to SetMeshShadowsEnabled, SetLightShadowCastingEnabled to SetLightShadowsEnabled and related
+'Is' getters.
+
+Added GetSurfaceCount, GetSurface, GetSurfaceMaterial.
+
+Added GetVertexX, GetVertexY, GetVertexZ etc.
+
+Reverted Mesh function names to simpler b3d style.
+
+Added COLLISION_RESPONSE_SLIDEXZ to prevent sliding down hills, really need a 'threshold' angle version...
+
+Added new bool config vars: "render.shadowPassEnabled", "render.opaquePassEnabled", "render.blendPassEnabled",
+"render.effectPassEnabled".
+
+Fixed bug where some alpha blended surfaces were being drawn twice.
+
+Fixed not being able to change collision response type.
+
+
+***** V0.11 *****
+
+Added sgd.bb and keycodes.bb include files. Ultimately you wont need these as they'll be built into the runtime.
+
+Added SetWindowTitle, SetWindowPosition, GetWindowX, GetWindowY, SetWindowState, GetWindowState, SetFullscrenMode.
+
+Added some range checking to primitive creation.
+
+Tweaked error system so ALL errors end up at LibSGD error handler.
+
+Changed SetModelColor so you don't have to premultiply color by alpha any more.
+
+Added blendtest.bb demo.
+
+Added SetEntityName, GetEntityName, GetEntityChildCount, GetEntityChild, FindEntityChild.
+
+Added dawn.validationEnabled bool config var to disable dawn device validation. Should only be used for 'release' type builds. In theory,
+SGD should not be causing Dawn errors, in practice it still happens and the validation errors can be incredibly useful.
+
+Finally implemented transparent surface sorting. Transparent models/surfaces are now sorted based on origin (center of bounding box)
+distance to eye. Models are sorted first, then surfaces within the same model are sorted against each other. This tries to reduce sorting
+work somewhat by avoiding comparing every surface with every surface, but it raises the possiblity of sorting errors when two surfaces
+from different models intersect.
+
+Transparent surfaces cannot be instanced (AFAICT), so must effectively be drawn one-by-one which is considerably slower than instancing.
+Ultimately this will be made optional, as drawing transparent surfaces in any old random order is often good enough, but for now, any
+surfaces loaded by the gltf loader that use alphaBlend blend mode will be treated as transparent and sorted by origin as above.
+
+Transparent surface are also not 'merged' by the loader. When loading several surfaces that use the same opaque/alphaMask material, the
+loader will merge them into a single SGD surface. However, doing this to transparent surfaces may result in single unsortable 'blob'
+surfaces, so surfaces with transparent materials are never merged.
+
+Opaque/alphaMask surfaces are pretty much unaffected by any of this, and are still instanced when shared by multiple models, even if those
+models also contain transparent surface. Sprites are also still rendered in a separate pass, which will need addressing at some point in
+the future too.
+
+Added debug.gltfLoader bool config var to enable gltf loader logging.
+
+Fixed gltf material base color not being premultiplied by alpha.
+
+
+***** V0.10 *****
+
+Added CameraUnproject, GetUnprojectedX, GetUnprojectedY, GetUnprojectedZ.
+
+Added CreateFogEffect, SetFogEffectColor, SetFogEffectRange, SetFogEffectPower - see tower.bb for some simple FOG. Note fog will not
+affect the skybox. If you want a solid fadeout, set fog color and clear color to the same values and dont use a skybox. 'Fade to skybox'
+is not possible yet.
+
+Added SetRenderEffectEnabled, IsRenderEffectEnabled.
+
+Added CreateBlurEffect, SetBlurEffectRadius.
+
+Added CreateMonoColorEffect, SetMonoColorEffectColor - see cesiumman.bb for cheesy sepia tone effect using this effect.
+
+Renamed SetImageSpriteViewMode to SetImageViewMode.
+
+Renamed SetImageSpriteRect to SetImageRect.
+
+Renamed SetImageDraw2DHandle to SetImage2DHandle.
+
+Removed SetWebGPUBackendType, use SetConfigVar("dawn.backendType", "D3D12") instead.
+
+Added SetConfigVar(SGD_String name, SGD_String value).
+
+Major source code tidy up.
+
+
+***** V0.09 *****
+
+Merge dawn fork with upstream.
+
+Added SetCSMClipRange, SetCSMDepthBias, SetPSMClipNear, SetPSMDepthBias for fine tuning shadows.
+
+
+***** V0.08.1 *****
+
+Fixed rgabTexture() function.
+
+Made default evnmap texture black again, as in v0.07.2
+
+
+***** V0.08 *****
+
+Renamed a few things.
+
+Fixed sprite scaling.
+
+Added SetCSMTextureSize, SetMaxCSMLights, SetCSMSplitDistances, SetPSMTextureSize, SetMaxPSMLights, where PSM = point light shadow maps. Checkout
+primitives.bb for the different 4K shadows make!
+
+Added 'cascading shadow maps' (CSM) for directional lights! Checkout csmcrates.bb - works well here on Windows, not so greate opn linux you might
+need to reduce the number of crates to get a decent result.
+
+
+***** V0.07.2 *****
+
+* Fix sprite instance bug.
+
+
+***** V0.07.1 *****
+
+* Updated collide.bb to show collision point/normal.
+
+* Added GetCollisionCount, CollisionX, CollisionY, CollisionZ, CollsionNX, CollisionNY, CollisionNZ.
+
+
+***** V0.07 *****
+
+* Added trees.bb alpha mask demo.
+
+* Fixed Fetch CURL code caching 404 pages.
+
+* Disabled D3D12 backend in 32 bit Blitz3D.
+
+* Changed static mesh instancing to use shader storage instead of vertex buffers. Let me know if you notice mesh instancing doing
+anything weird or slowing down etc.
+
+* Added alpha mask blend mode. *** WARNING *** material blend mode constants have been renamed and changed - sorry, and alas it may not be
+the last time:
+
+SGD_BLEND_MODE_OPAQUE = 1         // dst.rgb = src.rgb
+SGD_BLEND_MODE_ALPHA_MASK = 2     // dst.rgb = src.a >= 0.5 ? src.rgb : dst.rgb
+SGD_BLEND_MODE_ALPHA_BLEND = 3    // dst.rgb = src.rgb + dst.rgb * (1.0 - src.a)
+
+Additive and multiply have been removed for now until I work out how transparency is gonna work in general.
+
+Note that alpha mask does not do any blending, it's just a binary render/discard mechanism so may not look as smooth as alpha blending.
+However, it works fine with a normal depth buffer so doesn't require any sorting and so is a good high speed alternative. I also have an
+idea for a little hack that should smooth out the edges a bit, and it should be possible to get them going with shadows too.
+
+For alpha masking, premultiplied alpha should NOT really be used as it means the edges of things get darker as they approach 0.5 alpha. I
+tried using 1.0 instead but there were issues with filtering and mipmapping - might revisit this though. However, there is currently no easy
+way to disable premultiplied alpha, apart from loading a model with alpha mask materials. Not sure of the best way to deal with this yet. I
+don't really want to add an extra format as it's still just 'alpha' so it'll probably be a new texture flag.
+
+If you've been using '2' for alpha blending, you'll now get alpha masking instead which I think is what a lot of people have been wanting
+anyway. If you want proper alpha blending, you'll need to change to 3. Best just to use symbolic constants if possible - alas, Blitz3D
+*still* can't do this - I need to get off my ass and fix this, even if it's just an include file for now!
+
+Note that sprite images still use ALPHA_BLEND. Sprites do work with ALPHA_MASK, but the grassdemo looked a bit ropey (mostly due to the
+low-res texture, which does hurt alpha mask quality) and there's the issue with not being able to not premultiply alpha, so I left it for
+now.
+
+All-in-all, decent transparency support will be an ongoing mission...
+
+* Added FlushChars. I sorted of wanted to automate this (ie: it could be auto-called internally before poll events), but am worried people
+who aren't using GetChar in a loop will 'miss' chars if I did, so am playing it safe.
+
+* Fixed a bug in FlipMesh where only first tri was getting flipped.
+
+* Added AimEntityAtEntity and AimEntityAtPoint.
+
+* Added deprecation system - you should now get a runtime warning when using a deprecated function, eg: TransformMesh, TransformMeshTexCoords.
+
+* Deprecated/renamed TransformMesh, TransformMeshtexCoords to TFormMesh, TFormMeshTexCoords.
+
+* Added TFormPoint, TFormVector, TFormNormal, TFormedX, TFormedY, TFormedZ.
+
+* Added CreateEllipsoidCollider, SetColliderHeight.
+
+
+***** V0.06.2 *****
+
+* Added 'weight' float param to AnimateModel for simple animation blending - see animblend.bb
+
+* Fix Macos build.
+
+* Fixed alpha 0 not always fully transparent due to PBR shader generating colors.
+
+
+***** V0.06.1 *****
+
+* Added quad primitive example to primitives.bb using CreateBox.
+
+* Added SetLightPriority - test please James!
+
+* Added hit ESCAPE to exit to helloworlds.
+
+* Added key codes to SWIG targets.
+
+* Added TransformMesh.
+
+* Fixed sprite image->material dependency crash.
+
+* Fixed sprite renderer crashing with 0 sprites.
+
+* Fixed CopyEntity crash when copying models.
+
+
+***** v0.06 *****
+
+* Bumped max point lights to 32, max spot lights to 16.
+
+* Added CameraProject.
+
+* Added CameraPick, LinePick, PickedX, PickedY, PickedZ, PickedNX, PickedNY, PickedNZ.
+
+* Added CreateSphereCollider, CreateMeshCollider, EnableCollisions, UpdateColliders. See collide.bb
+
+* (BREAKING) CreateSkybox now takes a texture paramter, use 0 for 'no texture' to get existing behaviour.
+
+* (BREAKING) CreateModel now takes a mesh paramter, use 0 for 'no mesh' to get existing behaviour.
+
+* Added WINDOW_FLAGS_CENTERED.
+
+* (BREAKING) Added MouseZ, MouseVZ, SetMouseZ, removed MouseScroll.
+
+* Added SetEntityEnabled, EntityEnabled, SetEntityVisible, EntityVisible.
+
+* Added Push2DLayer, Pop2DLayer.
+
+* (BREAKING) SetSpriteMaterial replace by SetSpriteImage.
+
+* Added SetImageSpriteRect and SetImageSpriteViewMode.
+
+* Added CreateImage, SetImageRect, ImageWidth, ImageHeight,  Draw2DImage.
+
+* Added FontTextWidth, FontHeight, Font2DTextWidth and Font2DHeight.
+
+* (BREAKING) Renamed Load2DFont -> LoadFont.
+
+* Fixed swapped normal y, z coords in SetVertex.
+
+
+***** V0.05 *****
+
+* Added blitzmax target, thanks James for the convertor!
+
+* Re-arranged install/release layout, reflecting cmake organization better.
+
+* Added mesh building commands, see makesphere.bb. There's not really enough in there to pull apart existing meshes but it's a start.
+
+* Added support for ~ at start of file paths.
+
+* Moved fetch cache to ~/.sgd/cache dir
+
+* Tidied up logging a bit, log file is now written to ~/.sgd/log.txt and echoed to stdout by default.
+
+* Added audio functions.
+
+
+***** V0.04.1 *****
+
+* Tidied up external CMakeLists.txt
+
+* Merged Dawn with upstream version.
+
+* Fixed ImGui backend always passing mouse/keyboard events to SGD app.
+
+
+***** V0.04 *****
+
+* Added an ImGui backend to sgd_dynamic! See tests/libsgd_tests_imgui.cpp for example usage. This wont run 'as is', you'll need to add sgd_dynamic.dll to the exe dir.
+
+* Added SetMouseCursorMode to show, hide, disable or capture the mouse cursor.
+
+* Added 2 new texture formats. WARNING! This will likely affect all blitz3d env map loaders that use texture format 2, change to 4!
+
+* Added a bunch of 2D overlay functions, more to come. See overlay.bb
+
+
+***** V0.03.1b *****
+
+* Renamed sgd_Startup()/sgd_Shutdown() to sgd_Init()/sgd_Terminate() to keep MS Windows Defender happy.
+
+
+***** V0.03.1 *****
+
+* Entity matrices now use 64 bit double precision floats on 64 bit targets, for initial WIP 'huge world' support.
+
+* Fixed a (the?) DestroyEntity bug.
+
+* Added ClearScene to blitz3d.
+
+
+***** v0.03 *****
+
+* Fixed lots of mesh primitive issues, including all box meshes scaled by 2 for some reason.
+
+* Added sgd_SetMeshCastsShadoqw and sgd_SetLightShadowMappingEnabled, both off by default for now.
+
+* Begin work on shadowmapping!
+
+* Added sgd_ClearScene() and sgd_DestroyEntity(). Note ClearScene() just destroys everything, more subtle memory management coming but this is enough to write a game with at least.
+
+* Added sgd_Startup() and sgd_Shutdown() (not required in Blitz3D).
+
+* Added suspend-on-minimize behaviour, and EVENT_MASK_SUSPENDED and EVENT_MASK_RESUMED events.
+
+* Added sgd_WindowHasFocus(), and EVENT_MASK_LOST_FOCUS and EVENT_MASK_GOT_FOCUS events.
+
+* Added sgd_CopyEntity(), sgd_FPS().

@@ -1,0 +1,32 @@
+# Exes
+bin
+
+# Default CLion output dirs
+cmake-build-*
+cmake-install-*
+
+# CLion config
+.idea
+
+# Default MSVC output dir
+out
+
+# MSVC config
+.vs
+
+# Ignore Blitz3d backup files
+*.bb_bak1
+*.bb_bak2
+
+# Ignore blitzmax cache dirs
+.bmx
+
+# Ignore blitzmax backup files
+*.bmx.bak
+
+# Macos info
+.DS_Store
+
+# python cache and virtual environment
+__pycache__
+venv
